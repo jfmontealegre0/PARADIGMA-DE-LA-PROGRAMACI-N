@@ -1,0 +1,35 @@
+# Importamos la biblioteca que permite usar Prolog en Python,SE DEBE TENER DESCARGADO SWI-Prolog EN EL SISTEMA
+from pyswip import Prolog
+
+# Llamamos a Prolog
+prolog = Prolog()
+
+# Agregamos datos sobre familiares (reales)
+prolog.assertz("padre(juan, maria)")
+prolog.assertz("padre(juan, pedro)")
+prolog.assertz("madre(ana, maria)")
+prolog.assertz("madre(ana, pedro)")
+prolog.assertz("padre(carlos, juan)")
+prolog.assertz("madre(luisa, juan)")
+
+# Agregamos las reglas para calcular las relaciones
+prolog.assertz("hermano(X, Y) :- padre(Z, X), padre(Z, Y), X \\= Y")  # Hermanos si tienen el mismo padre
+prolog.assertz("abuelo(X, Y) :- padre(X, Z), padre(Z, Y)")  # Abuelo si es padre de otro padre
+prolog.assertz("abuelo(X, Y) :- padre(X, Z), madre(Z, Y)")  # Abuelo si es padre de una madre
+prolog.assertz("hijo(X, Y) :- padre(Y, X)")  # Un hijo es alguien que tiene un padre
+prolog.assertz("hijo(X, Y) :- madre(Y, X)")  # Un hijo también puede tener una madre
+
+# Consultamos quiénes son hermanos
+print("👨‍👩‍👦 Hermanos:")
+for resultado in prolog.query("hermano(X, Y)"):
+    print(f"{resultado['X']} es hermano de {resultado['Y']}")
+
+# Consultamos quiénes son abuelos
+print("\n👴 Abuelos:")
+for resultado in prolog.query("abuelo(X, Y)"):
+    print(f"{resultado['X']} es abuelo de {resultado['Y']}")
+
+# Consultamos quiénes son hijos
+print("\n👶 Hijos:")
+for resultado in prolog.query("hijo(X, Y)"):
+    print(f"{resultado['X']} es hijo de {resultado['Y']}")
